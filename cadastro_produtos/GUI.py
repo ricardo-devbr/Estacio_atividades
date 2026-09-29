@@ -1,11 +1,14 @@
 # INTERFACE GRAFICA COM BOTOES E EXECUCAO DE ACOES DO USUARIO
 # E DADOS FALSOS GERADOS PARA TESTE
+# É POSSIVEL CADASTRAR, ATUALIZAR EXCLUIR PRODUTO,
+# ALEM DE LIMPAR O CAMPO DE ENTRADA DE TEXTO
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from produto_DB import AppBD
 from faker import Faker
 
+# CRIA A INTERFACE GRAFICA
 class principal:
     def __init__(self, root, db):
         self.root = root
@@ -51,6 +54,7 @@ class principal:
 
         self.carregarDadosiniciais()
 
+# FUNCAO QUE CADASTRA PRODUTOS
     def fCadastrar_produto(self):
         nome = self.txtnome.get()
         preco = self.txtpreco.get()
@@ -58,7 +62,7 @@ class principal:
         self.fLimpar_tela()
         self.carregarDadosiniciais()  # Recarrega a tabela com o código real gerado pelo PostgreSQL
             
-
+# FUNCAO QUE ATUALIZA PRODUTO COM BASE EM UM ID
     def fAtualizar_produto(self):
         id = self.txtid.get().strip()
         if not id.isdigit():
@@ -71,6 +75,7 @@ class principal:
         self.fLimpar_tela()
         self.carregarDadosiniciais()
 
+# FUNCAO QUE EXCLUI PRODUTO COM BASE NO ID OU APENAS SELECIOANDO NA TREEVIEW
     def fExcluir_produto(self):
         id = self.txtid.get().strip()
         if not id.isdigit():
@@ -81,11 +86,14 @@ class principal:
         self.fLimpar_tela()
         self.carregarDadosiniciais()
 
+# LIMPA OS CAMPOS DE TEXTO
     def fLimpar_tela(self):
         self.txtid.delete(0, tk.END)
         self.txtnome.delete(0, tk.END)
         self.txtpreco.delete(0, tk.END)
-        
+
+# FUNCAO QUE PERMITE SELECIONAR UM LINHA NA TABELA CLICANDO
+# ELA ENVIA OS VALORES DA LINHA SELECIONADA PARA OS CAMPOS DE TEXTO
     def fApresentar_registros_selecionados(self, event):
         selecao = self.tree.selection()
         if not selecao:
@@ -99,6 +107,7 @@ class principal:
         self.txtpreco.delete(0, tk.END)
         self.txtpreco.insert(0, valores[2])
 
+# EXIBE OS DADOS QUE JA ESTAVAM SALVO NO BANCO DE DADOS.
     def carregarDadosiniciais(self):
         for item in self.tree.get_children():
             self.tree.delete(item)  
@@ -106,7 +115,7 @@ class principal:
         for registro in registros:
             self.tree.insert('', 'end', values=registro)
 
-# funcao que gera dados falso de teste para o banco de dados
+# FUNCAO QUE GERA DADOS FALSOS PARA TESTE
 def gerar_dados_falsos():
     app_bd = AppBD()
     fake = Faker('pt_BR')
