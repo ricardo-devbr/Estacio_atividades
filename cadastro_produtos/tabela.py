@@ -1,3 +1,6 @@
+
+# CONECTA AO POSTGRESQL E CRIA A "tabela_de_dados"
+
 import psycopg2
 
 conexao = psycopg2.connect(

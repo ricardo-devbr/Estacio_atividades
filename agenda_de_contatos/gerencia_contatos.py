@@ -5,36 +5,50 @@ from psycopg2 import Error
 def connect_to_db():
     try:
         connection = psycopg2.connect(
-        host = "localhost",
-        database = "crud_app",
-        user = "ricardo",
-        password = "tomzy2219",
-        )
+            host = "localhost",
+            database = "crud_app",
+            user = "ricardo",
+            password = "tomzy2219",
+            )
         return connection
     except Error as e:
         print(f"Erro ao conectar ao Banco de dados {e}")
         return None
-
+    
+# funcao para criar um contato
 def create_contact():
     nome = input('Digite o nome: ')
-    telefone = input('Digite o telefone: ')
+    telefone = input('Digite o telefone: ').strip()
+
+    # verifica se a variavel telefone contem apenas digitos numericos
+    if not telefone.isdigit():
+        print('Telefone invalido: informe apenas numeros.')
+        return
+    
     conn = connect_to_db()
-    if conn is not None:
+    if conn is None:
+        return
+    
+    # cria o cursor e executa a acao de insert no banco de dados
+    # se der errado, retorna o erro
+    try:
         cursor = conn.cursor()
-        try:
-            cursor.execute("""
+        cursor.execute("""
             INSERT INTO public. "AGENDA_DE_CONTATOS" (nome, telefone)
             VALUES (%s, %s) RETURNING id;
-            """, (nome, telefone))
-            contact_id = cursor.fetchone()[0]
-            conn.commit()
-            print(f"\nContato criado com sucesso!\nID do contato: {contact_id}")
-        except Error as e:
-                print(f"Erro ao criar contato: {e}")
-        finally:
+        """, (nome, telefone))
+        contact_id = cursor.fetchone()[0]
+        conn.commit()
+        print(f"\nContato criado com sucesso!\nID do contato: {contact_id}")
+    except Error as e:
+        conn.rollback()
+        print(f"Erro ao criar contato: {e}")
+    finally:
+        if cursor is not None:
             cursor.close()
-            conn.close()
+        conn.close()
 
+# funcao para selecionar os dados no banco de dados e exibir o que está salvo
 def read_contact():
     conn = connect_to_db()
     if conn is not None:
@@ -52,6 +66,8 @@ def read_contact():
             cursor.close()
             conn.close()
 
+# funcao para atualizar um contatd ja existente
+# no banco de dados informando ID.
 def update_contact(contact_id, new_name, new_phone):
     conn = connect_to_db()
     if conn is not None:
@@ -70,6 +86,7 @@ def update_contact(contact_id, new_name, new_phone):
             cursor.close()
             conn.close()
 
+# funcao para deletar um contato com base no ID
 def delete_contact(contact_id):
     conn = connect_to_db()
     if conn is not None:
@@ -86,7 +103,7 @@ def delete_contact(contact_id):
         finally:
             cursor.close()
             conn.close()
-
+# funcao que cria a interface no terminal.
 def main():
     while True:
         print('\nMenu:')

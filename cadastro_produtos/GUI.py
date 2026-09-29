@@ -1,6 +1,9 @@
+# INTERFACE GRAFICA COM BOTOES E EXECUCAO DE ACOES DO USUARIO
+# E DADOS FALSOS GERADOS PARA TESTE
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
-from app_DB import AppBD
+from produto_DB import AppBD
 from faker import Faker
 
 class principal:
@@ -57,7 +60,11 @@ class principal:
             
 
     def fAtualizar_produto(self):
-        id = self.txtid.get()
+        id = self.txtid.get().strip()
+        if not id.isdigit():
+            messagebox.showwarning("Código inválido", "Selecione um produto com código válido antes de atualizar.")
+            return
+
         nome = self.txtnome.get()
         preco = self.txtpreco.get()
         self.db.atualizar_dados(id, nome, preco)
@@ -65,7 +72,11 @@ class principal:
         self.carregarDadosiniciais()
 
     def fExcluir_produto(self):
-        id = self.txtid.get()
+        id = self.txtid.get().strip()
+        if not id.isdigit():
+            messagebox.showwarning("Código inválido", "Selecione um produto com código válido antes de excluir.")
+            return
+
         self.db.excluir_dados(id)
         self.fLimpar_tela()
         self.carregarDadosiniciais()
@@ -76,7 +87,10 @@ class principal:
         self.txtpreco.delete(0, tk.END)
         
     def fApresentar_registros_selecionados(self, event):
-        item = self.tree.selection()[0]
+        selecao = self.tree.selection()
+        if not selecao:
+            return
+        item = selecao[0]
         valores = self.tree.item(item, 'values')
         self.txtid.delete(0, tk.END)
         self.txtid.insert(0, valores[0])
@@ -92,6 +106,7 @@ class principal:
         for registro in registros:
             self.tree.insert('', 'end', values=registro)
 
+# funcao que gera dados falso de teste para o banco de dados
 def gerar_dados_falsos():
     app_bd = AppBD()
     fake = Faker('pt_BR')

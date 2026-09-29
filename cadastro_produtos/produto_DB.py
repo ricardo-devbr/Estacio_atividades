@@ -1,3 +1,5 @@
+# executa as consultas para listar, cadastrar, atualizar e excluir produtos
+
 from tabela import conexao, cursor
 from faker import Faker
 from psycopg2 import Error
@@ -21,6 +23,7 @@ class AppBD:
             registros = self.cur.fetchall()
             return registros
         except (Exception, Error) as erro:  
+            self.conn.rollback()
             print("Erro ao selecionar dados:", erro)
             return []
         
@@ -34,6 +37,7 @@ class AppBD:
             self.conn.commit()
             print("\nDados inseridos com sucesso!\n")
         except (Exception, Error) as erro:
+            self.conn.rollback()
             print("Erro ao inserir dados:", erro)
 
     def atualizar_dados(self, id, nome, preco):
@@ -48,6 +52,7 @@ class AppBD:
             self.conn.commit()
             print("\nDados atualizados com sucesso!\n")
         except (Exception, Error) as erro:
+            self.conn.rollback()
             print("Erro ao atualizar dados:", erro)
     def excluir_dados(self, id):
         try:
@@ -60,6 +65,7 @@ class AppBD:
             self.conn.commit()
             print("\nDados excluídos com sucesso!\n")
         except (Exception, Error) as erro:
+            self.conn.rollback()
             print("Erro ao excluir dados:", erro)
 
     
